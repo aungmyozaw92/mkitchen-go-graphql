@@ -1,0 +1,326 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+directive @goField(
+  forceResolver: Boolean
+  name: String
+) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+# new directive
+directive @auth on FIELD_DEFINITION
+
+scalar Time
+scalar Upload
+
+type Branch {
+  id: ID!
+  name: String!
+  street1: String
+  street2: String
+  city: String
+  state: String
+  phone: String
+}
+
+input NewBranch {
+  name: String!
+  street1: String
+  street2: String
+  city: String
+  state: String
+  phone: String
+}
+
+type BranchPagination {
+  edges: [BranchEdge!]!
+  pageInfo: PageInfo!
+}
+
+type BranchEdge {
+  cursor: String!
+  node: Branch
+}
+
+type Category {
+  id: ID!
+  name: String!
+  parentCategory: Category
+  products: [Product!]!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input NewCategory {
+  name: String!
+  parentCategoryId: Int
+}
+
+type User {
+  id: ID!
+  username: String!
+  name: String!
+  email: String
+  isActive: Boolean!
+  role: String!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input NewUser {
+  username: String!
+  name: String!
+  email: String
+  isActive: Boolean!
+  password: String!
+  role: String!
+}
+
+type LoginInfo {
+  token: String!
+  userId: Int!
+  username: String!
+  name: String!
+  role: String!
+}
+
+type PageInfo {
+  startCursor: String!
+  endCursor: String!
+  hasNextPage: Boolean
+}
+
+type GeneratedDummy {
+  name: String!
+}
+
+type Supplier {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String!
+  address: String!
+  isActive: Boolean!
+  createdAt: Time
+  updatedAt: Time
+}
+
+input NewSupplier {
+  name: String!
+  email: String!
+  phone: String!
+  address: String!
+  isActive: Boolean!
+  password: String
+}
+
+type ProductOption {
+  id: ID!
+  productId: Int!
+  option_name: String!
+  option_value: String!
+  createdAt: Time
+  updatedAt: Time
+}
+
+input NewProductOption {
+  option_name: String!
+  option_value: String!
+}
+
+input UpdateProductOption {
+  id: Int!
+  option_name: String!
+  option_value: String!
+}
+
+type ProductVariation {
+  id: ID!
+  productId: Int!
+  variantName: String!
+  price: Float!
+  sku: String!
+  image_url: String
+  barcode: String
+  createdAt: Time
+  updatedAt: Time
+}
+
+input NewProductVariation {
+  variant_name: String!
+  price: Float!
+  sku: String!
+  barcode: String
+  image_url: String
+}
+
+input UpdateProductVariation {
+  id: Int!
+  variant_name: String!
+  price: Float!
+  sku: String!
+  barcode: String
+  image_url: String
+}
+
+type Tag {
+  id: ID!
+  name: String!
+  products: [Product]!
+}
+
+input NewTag {
+  name: String!
+}
+
+type Image {
+  id: ID!
+  image_url: String!
+  owner_type: String
+  owner_id: Int
+}
+
+input NewImage {
+  image_url: String!
+}
+
+type ProductTags {
+  productId: Int!
+  tagId: Int!
+}
+
+type ProductPagination {
+  edges: [ProductEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ProductEdge {
+  cursor: String!
+  node: Product
+}
+
+type Product {
+  id: ID!
+  title: String!
+  description: String!
+  price: Float!
+  compare_price: Float
+  cost: Float
+  sku: String
+  barcode: String
+  is_qty_tracked: Boolean
+  is_physical_product: Boolean
+  is_continue_selling_out_of_stock: Boolean
+  weight: Float
+  category_id: Int!
+  category: Category
+  supplier_id: Int!
+  supplier: Supplier
+  product_options: [ProductOption!]!
+  product_variations: [ProductVariation!]!
+  tags: [Tag]
+  images: [Image!]!
+  createdAt: Time
+  updatedAt: Time
+}
+
+input NewProduct {
+  title: String!
+  description: String!
+  price: Float!
+  comparePrice: Float
+  cost: Float
+  sku: String!
+  barcode: String
+  is_qty_tracked: Boolean
+  is_physical_product: Boolean
+  is_continue_selling_out_of_stock: Boolean
+  weight: Float
+  category_id: Int!
+  supplier_id: Int!
+  product_options: [NewProductOption!]!
+  product_variations: [NewProductVariation!]!
+  images: [NewImage!]
+  tags: [NewTag]!
+}
+
+input UpdateProductInput {
+  title: String!
+  description: String!
+  price: Float!
+  comparePrice: Float
+  cost: Float
+  sku: String!
+  barcode: String
+  is_qty_tracked: Boolean
+  is_physical_product: Boolean
+  is_continue_selling_out_of_stock: Boolean
+  weight: Float
+  category_id: Int!
+  supplier_id: Int!
+  images: [NewImage!]
+  tags: [NewTag!]
+  add_options: [NewProductOption!]
+  add_variations: [NewProductVariation!]
+  update_options: [UpdateProductOption!]
+  update_variations: [UpdateProductVariation!]
+  delete_options: [ID!]
+  delete_variations: [ID!]
+}
+
+type Query {
+  branch(id: ID!): Branch! @goField(forceResolver: true) @auth
+  branches(name: String, city: String): [Branch] @goField(forceResolver: true) @auth
+  branchPagination(first: Int = 10, after: String): BranchPagination
+    @goField(forceResolver: true)
+    @auth
+
+  category(id: ID!): Category! @goField(forceResolver: true) @auth
+  categories(name: String): [Category] @goField(forceResolver: true) @auth
+
+  supplier(id: ID!): Supplier! @goField(forceResolver: true) @auth
+  suppliers(name: String): [Supplier] @goField(forceResolver: true) @auth
+  user(id: ID!): User! @goField(forceResolver: true) @auth
+
+  product(id: ID!): Product! @goField(forceResolver: true) @auth
+  products(name: String): [Product] @goField(forceResolver: true) @auth
+  productPagination(first: Int = 10, after: String): ProductPagination
+    @goField(forceResolver: true)
+    @auth
+}
+
+type Mutation {
+  login(username: String!, password: String!): LoginInfo!
+    @goField(forceResolver: true)
+  register(input: NewUser!): User! @goField(forceResolver: true)
+  createBranch(input: NewBranch!): Branch! @goField(forceResolver: true) @auth
+  updateBranch(id: ID!, input: NewBranch!): Branch! @goField(forceResolver: true) @auth
+  deleteBranch(id: ID!): Branch! @goField(forceResolver: true) @auth
+  createCategory(input: NewCategory!): Category!
+    @goField(forceResolver: true)
+    @auth
+  updateCategory(id: ID!, input: NewCategory!): Category!
+    @goField(forceResolver: true)
+    @auth
+  deleteCategory(id: ID!): Category! @goField(forceResolver: true) @auth
+  createSupplier(input: NewSupplier!): Supplier!
+    @goField(forceResolver: true)
+    @auth
+  updateSupplier(id: ID!, input: NewSupplier!): Supplier!
+    @goField(forceResolver: true)
+    @auth
+  deleteSupplier(id: ID!): Supplier! @goField(forceResolver: true) @auth
+
+  uploadSingleImage(file: Upload!): String! @goField(forceResolver: true) @auth
+
+  uploadMultipleImages(files: [Upload!]!): [String!]!
+    @goField(forceResolver: true)
+    @auth
+
+  createProduct(input: NewProduct!): Product!
+    @goField(forceResolver: true)
+    @auth
+  updateProduct(id: ID!, input: UpdateProductInput!): Product!
+    @goField(forceResolver: true)
+    @auth
+  deleteProduct(id: ID!): Product! @goField(forceResolver: true) @auth
+}
