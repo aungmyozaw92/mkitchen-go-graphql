@@ -25,7 +25,7 @@ func getJwtSecret() string {
 	return secret
 }
 
-func JwtGenerate(userID int, role string) (string, error) {
+func JwtGenerate(userID int) (string, error) {
 	token_lifespan, err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
 
 	if err != nil {
@@ -34,7 +34,6 @@ func JwtGenerate(userID int, role string) (string, error) {
 
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, &JwtCustomClaim{
 		ID:   userID,
-		Role: role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * time.Duration(token_lifespan)).Unix(),
 			IssuedAt:  time.Now().Unix(),

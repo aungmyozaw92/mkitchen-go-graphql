@@ -19,6 +19,7 @@ const (
 
 // Loaders wrap your data loaders to inject via middleware
 type Loaders struct {
+	RoleLoader *dataloader.Loader[int, *models.Role]
 	CatgoryLoader *dataloader.Loader[int, *models.Category]
 	SupplierLoader *dataloader.Loader[int, *models.Supplier]
 	ProductLoader *dataloader.Loader[int, *models.Product]
@@ -31,12 +32,14 @@ func NewLoaders(conn *gorm.DB) *Loaders {
 	// define the data loader
 	
 	ar := &categoryReader{db: conn}
+	role := &roleReader{db: conn}
 	supplier := &supplierReader{db: conn}
 	product := &productReader{db: conn}
 	productV := &productVariationReader{db: conn}
 	productOpt := &productOptionReader{db: conn}
 
 	return &Loaders{
+		RoleLoader: dataloader.NewBatchedLoader(role.getRoles, dataloader.WithWait[int, *models.Role](time.Millisecond)),
 		CatgoryLoader: dataloader.NewBatchedLoader(ar.getCategories, dataloader.WithWait[int, *models.Category](time.Millisecond)),
 		SupplierLoader: dataloader.NewBatchedLoader(supplier.getSuppliers, dataloader.WithWait[int, *models.Supplier](time.Millisecond)),
 		ProductLoader: dataloader.NewBatchedLoader(product.getProducts, dataloader.WithWait[int, *models.Product](time.Millisecond)),

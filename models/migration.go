@@ -11,6 +11,7 @@ func MigrateTable() {
 
 	err := db.AutoMigrate(
 		&Branch{}, 
+		&Role{},
 		&Category{}, 
 		&User{}, 
 		&Supplier{},

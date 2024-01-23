@@ -41,6 +41,17 @@ type BranchEdge {
   node: Branch
 }
 
+type Role {
+  id: ID!
+  name: String!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input NewRole {
+  name: String!
+}
+
 type Category {
   id: ID!
   name: String!
@@ -61,7 +72,8 @@ type User {
   name: String!
   email: String
   isActive: Boolean!
-  role: String!
+  roleId: Int!
+  role: Role
   createdAt: Time!
   updatedAt: Time!
 }
@@ -72,7 +84,7 @@ input NewUser {
   email: String
   isActive: Boolean!
   password: String!
-  role: String!
+  roleId: Int!
 }
 
 type LoginInfo {
@@ -80,7 +92,6 @@ type LoginInfo {
   userId: Int!
   username: String!
   name: String!
-  role: String!
 }
 
 type PageInfo {
@@ -269,17 +280,24 @@ input UpdateProductInput {
 
 type Query {
   branch(id: ID!): Branch! @goField(forceResolver: true) @auth
-  branches(name: String, city: String): [Branch] @goField(forceResolver: true) @auth
+  branches(name: String, city: String): [Branch]
+    @goField(forceResolver: true)
+    @auth
   branchPagination(first: Int = 10, after: String): BranchPagination
     @goField(forceResolver: true)
     @auth
+
+  role(id: ID!): Role! @goField(forceResolver: true) @auth
+  roles(name: String): [Role] @goField(forceResolver: true) @auth
 
   category(id: ID!): Category! @goField(forceResolver: true) @auth
   categories(name: String): [Category] @goField(forceResolver: true) @auth
 
   supplier(id: ID!): Supplier! @goField(forceResolver: true) @auth
   suppliers(name: String): [Supplier] @goField(forceResolver: true) @auth
+
   user(id: ID!): User! @goField(forceResolver: true) @auth
+  users(name: String): [User] @goField(forceResolver: true) @auth
 
   product(id: ID!): Product! @goField(forceResolver: true) @auth
   products(name: String): [Product] @goField(forceResolver: true) @auth
@@ -293,8 +311,17 @@ type Mutation {
     @goField(forceResolver: true)
   register(input: NewUser!): User! @goField(forceResolver: true)
   createBranch(input: NewBranch!): Branch! @goField(forceResolver: true) @auth
-  updateBranch(id: ID!, input: NewBranch!): Branch! @goField(forceResolver: true) @auth
+  updateBranch(id: ID!, input: NewBranch!): Branch!
+    @goField(forceResolver: true)
+    @auth
   deleteBranch(id: ID!): Branch! @goField(forceResolver: true) @auth
+
+  createRole(input: NewRole!): Role! @goField(forceResolver: true) @auth
+  updateRole(id: ID!, input: NewRole!): Role!
+    @goField(forceResolver: true)
+    @auth
+  deleteRole(id: ID!): Role! @goField(forceResolver: true) @auth
+
   createCategory(input: NewCategory!): Category!
     @goField(forceResolver: true)
     @auth

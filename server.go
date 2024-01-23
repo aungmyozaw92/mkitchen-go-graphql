@@ -9,6 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/myanmarmarathon/mkitchen-distribution-backend-graphql/cmd"
 	"github.com/myanmarmarathon/mkitchen-distribution-backend-graphql/config"
 	"github.com/myanmarmarathon/mkitchen-distribution-backend-graphql/directives"
 	"github.com/myanmarmarathon/mkitchen-distribution-backend-graphql/graph"
@@ -53,6 +54,9 @@ func customNotFoundHandler(c *gin.Context) {
 }
 
 func main() {
+
+	cmd.Execute()
+	
 	port := os.Getenv("API_PORT")
 	if port == "" {
 		port = defaultPort
@@ -63,6 +67,8 @@ func main() {
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 	models.MigrateTable()
+
+	
 
 	// Setup UpTrace Logging with OpenTelemetry
 	// upTraceDsn := os.Getenv("UPTRACE_DSN")

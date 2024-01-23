@@ -65,6 +65,21 @@ func (r *mutationResolver) DeleteBranch(ctx context.Context, id int) (*models.Br
 	return models.DeleteBranch(ctx, id)
 }
 
+// CreateRole is the resolver for the createRole field.
+func (r *mutationResolver) CreateRole(ctx context.Context, input models.NewRole) (*models.Role, error) {
+	return models.CreateRole(ctx, &input)
+}
+
+// UpdateRole is the resolver for the updateRole field.
+func (r *mutationResolver) UpdateRole(ctx context.Context, id int, input models.NewRole) (*models.Role, error) {
+	return models.UpdateRole(ctx, id, &input)
+}
+
+// DeleteRole is the resolver for the deleteRole field.
+func (r *mutationResolver) DeleteRole(ctx context.Context, id int) (*models.Role, error) {
+	return models.DeleteRole(ctx, id)
+}
+
 // CreateCategory is the resolver for the createCategory field.
 func (r *mutationResolver) CreateCategory(ctx context.Context, input models.NewCategory) (*models.Category, error) {
 	return models.CreateCategory(ctx, &input)
@@ -179,6 +194,16 @@ func (r *queryResolver) BranchPagination(ctx context.Context, first *int, after 
 	return models.GetPaginatedBranches(ctx, first, after)
 }
 
+// Role is the resolver for the role field.
+func (r *queryResolver) Role(ctx context.Context, id int) (*models.Role, error) {
+	return models.GetRole(ctx, id)
+}
+
+// Roles is the resolver for the roles field.
+func (r *queryResolver) Roles(ctx context.Context, name *string) ([]*models.Role, error) {
+	return models.GetRoles(ctx, name)
+}
+
 // Category is the resolver for the category field.
 func (r *queryResolver) Category(ctx context.Context, id int) (*models.Category, error) {
 	return models.GetCategory(ctx, id)
@@ -204,6 +229,11 @@ func (r *queryResolver) User(ctx context.Context, id int) (*models.User, error) 
 	return models.GetUser(ctx, id)
 }
 
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context, name *string) ([]*models.User, error) {
+	return models.GetAllUsers(ctx)
+}
+
 // Product is the resolver for the product field.
 func (r *queryResolver) Product(ctx context.Context, id int) (*models.Product, error) {
 	return models.GetProduct(ctx, id)
@@ -217,6 +247,11 @@ func (r *queryResolver) Products(ctx context.Context, name *string) ([]*models.P
 // ProductPagination is the resolver for the productPagination field.
 func (r *queryResolver) ProductPagination(ctx context.Context, first *int, after *string) (*models.ProductPagination, error) {
 	return models.GetPaginatedProducts(ctx, first, after)
+}
+
+// Role is the resolver for the role field.
+func (r *userResolver) Role(ctx context.Context, obj *models.User) (*models.Role, error) {
+	return middlewares.GetRole(ctx, obj.RoleId)
 }
 
 // Category returns CategoryResolver implementation.
@@ -234,8 +269,12 @@ func (r *Resolver) Product() ProductResolver { return &productResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// User returns UserResolver implementation.
+func (r *Resolver) User() UserResolver { return &userResolver{r} }
+
 type categoryResolver struct{ *Resolver }
 type imageResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type productResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }

@@ -18,8 +18,8 @@ type User struct {
 	Name      string    `gorm:"size:255;not null" json:"name" binding:"required"`
 	Email     string    `gorm:"default:null;size:255;unique" json:"email"`
 	Password  string    `gorm:"size:100;not null" json:"password"`
-	IsActive  *bool     `gorm:"not null" json:"is_active"`
-	Role      string    `gorm:"size:100;not null" json:"role"`
+	IsActive  *bool     `gorm:"not null;default:false" json:"is_active"`
+	RoleId     int       `gorm:"not null;default:0" json:"role_id" binding:"required"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
@@ -30,7 +30,7 @@ type NewUser struct {
 	Email    string `json:"email"`
 	Password string `json:"password" binding:"required"`
 	IsActive *bool  `json:"is_active" binding:"required"`
-	Role     string `json:"role" binding:"required"`
+	RoleId    int   `json:"role_id" binding:"required"`
 }
 
 type LoginInfo struct {
@@ -38,7 +38,7 @@ type LoginInfo struct {
 	UserId   int    `json:"userId"`
 	Username string `json:"username"`
 	Name     string `json:"name"`
-	Role     string `json:"role"`
+	// Role     string `json:"role"`
 }
 
 func (result *User) PrepareGive() {
@@ -68,10 +68,9 @@ func Login(ctx context.Context, username string, password string) (*LoginInfo, e
 	if !isActive {
 		return &result, errors.New("user is disabled")
 	}
-	token, err := utils.JwtGenerate(u.ID, u.Role)
+	token, err := utils.JwtGenerate(u.ID)
 	result.Token = token
 	result.Name = u.Name
-	result.Role = u.Role
 	result.UserId = u.ID
 	result.Username = u.Username
 
@@ -127,7 +126,7 @@ func CreateUser(ctx context.Context, input *NewUser) (*User, error) {
 		Email:    strings.ToLower(input.Email),
 		Password: string(hashedPassword),
 		IsActive: input.IsActive,
-		Role:     input.Role,
+		RoleId: input.RoleId,
 	}
 
 	err = db.WithContext(ctx).Create(&user).Error
@@ -177,7 +176,7 @@ func (input *User) UpdateUser(id int) (*User, error) {
 		return &User{}, errors.New("duplicate email or username")
 	}
 
-	err = db.Model(&input).Updates(User{Name: input.Name, Email: input.Email, Username: input.Username, IsActive: input.IsActive}).Error
+	err = db.Model(&input).Updates(User{Name: input.Name, Email: input.Email, Username: input.Username, IsActive: input.IsActive, RoleId: input.RoleId}).Error
 	if err != nil {
 		return &User{}, err
 	}
